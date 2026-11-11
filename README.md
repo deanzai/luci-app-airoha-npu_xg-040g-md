@@ -1,4 +1,22 @@
-# luci-app-airoha-npu
+# luci-app-airoha-npu (Nokia XG-040G-MD / QWRT 适配版)
+
+> **Fork 来源声明**：本仓库 Fork 自上游项目 [rchen14b/luci-app-airoha-npu](https://github.com/rchen14b/luci-app-airoha-npu)。
+> 感谢原作者 [rchen14b](https://github.com/rchen14b) 的出色工作！本分支专门针对 **Nokia XG-040G-MD (Airoha EN7581/AN7581)** 以及搭载厂商 BSP 内核 (Linux 5.4 / QWRT) 的设备固件进行了针对性兼容适配与增强。
+
+### 本分支适配特性 (Adaptations for Nokia XG-040G-MD & QWRT):
+1. **NPU 驱动与固件识别适配**：
+   - 支持厂商 BSP 平台驱动 `/sys/bus/platform/drivers/an7581-bsp-npu` 及 `1e900000.npu` 设备节点绑定。
+   - 支持从 `/lib/firmware/airoha/en7581_npu_rv32.bin` 自动读取并提取 NPU 固件版本（如 `2.1.1-TLB7.3.283.1456-62`）。
+   - 兼容 `an7581-npu-wdt` 中断，正确识别 8 个 NPU 处理核心。
+2. **保留内存 (Reserved Memory) 自动计算**：
+   - 适配设备树保留内存节点，精准解析 `npu` (10 MiB)、`qdma0` (32 MiB)、`qdma1` (16 MiB)，正确展示 58 MiB 保留内存。
+3. **PPE 硬件流表智能回退解析**：
+   - 在 QWRT 厂商 BSP 内核未导出 `/sys/kernel/debug/ppe/entries` 时，自动同步 `/sys/bus/platform/devices/an7581-bsp-ppe.0.auto/status` 的活跃流总数与绑定数。
+   - 自动解析 Linux Netfilter flowtable (`[OFFLOAD]`) 硬件加速流，完整呈现 IPv4/IPv6、TCP/UDP 五元组连接与 NAT 反向转换流表项。
+4. **自动化部署与运维工具集**：
+   - 内置 `scripts/` 工具集：支持状态基准备份 (`backup.ps1`)、免编译快速推送 (`deploy.ps1`)、全方位验收检测 (`verify.ps1`) 以及秒级彻底还原/卸载脚本 (`rollback.ps1`)。
+
+---
 
 Real-time monitoring and management dashboard for the Airoha AN7581 and AN7583 SoCs on OpenWrt. Covers NPU offload, CPU frequency, WiFi band health, Frame Engine internals, and PPE flow tables.
 
